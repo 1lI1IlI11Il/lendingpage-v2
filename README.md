@@ -1,16 +1,25 @@
-# React + Vite
+# lendingpage-v2
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository currently contains two layers:
 
-Currently, two official plugins are available:
+1. a **temporary practice landing-page baseline** already present in the repo
+2. the newly added **Tradi product planning bundle** that defines the actual intended direction
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Current Tradi planning documents
 
-## React Compiler
+- `docs/tradi/README.md`
+- `docs/tradi/PRD.md`
+- `docs/tradi/WIREFRAMES.md`
+- `docs/tradi/IMPLEMENTATION_PLAN.md`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Existing repo work status
 
-## Expanding the ESLint configuration
+The current Vite/React landing-page implementation should be treated as **practice work**.
+It is not the source of truth for the Tradi product direction.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+If the repo is repurposed for Tradi implementation, the current practice-oriented files can be removed or replaced later.
+See `docs/legacy-practice-status.md` for the explicit cleanup note.
+
+## Next intended step
+
+Use the documents under `docs/tradi/` as the source of truth for the next implementation pass.
