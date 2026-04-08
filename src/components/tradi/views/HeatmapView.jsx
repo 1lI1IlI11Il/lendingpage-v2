@@ -1,7 +1,32 @@
+import { useMemo } from 'react'
 import PanelCard from '../PanelCard'
-import { heatmapGroups, rotationNotes } from '../data'
+import { rotationNotes } from '../data'
+import { useMarketSnapshots } from '../useMarketSnapshots'
 
 export default function HeatmapView() {
+  const snapshots = useMarketSnapshots()
+
+  const heatmapGroups = useMemo(() => {
+    const tracked = snapshots.map((item) => ({
+      label: item.symbol,
+      move: item.move,
+      tone: item.tone === 'text-emerald-300'
+        ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300'
+        : 'border-rose-500/20 bg-rose-500/10 text-rose-300',
+    }))
+
+    return [
+      {
+        title: 'Tracked Assets',
+        items: tracked,
+      },
+      {
+        title: 'Macro Hedges',
+        items: tracked.filter((item) => ['XAUUSD', 'WTI', 'DXY'].includes(item.label)),
+      },
+    ]
+  }, [snapshots])
+
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_340px]">
       <div className="space-y-4">

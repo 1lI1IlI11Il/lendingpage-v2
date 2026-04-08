@@ -1,7 +1,32 @@
+import { useMemo } from 'react'
 import PanelCard from '../PanelCard'
-import { calendarEvents, newsItems, sectorTiles, summaryCards } from '../data'
+import { calendarEvents, newsItems } from '../data'
+import { useMarketSnapshots } from '../useMarketSnapshots'
 
 export default function DashboardView() {
+  const snapshots = useMarketSnapshots()
+
+  const summaryCards = useMemo(() => {
+    const byId = Object.fromEntries(snapshots.map((item) => [item.id, item]))
+    return [
+      { label: 'Korea beta', value: `${byId.kosdaq?.symbol ?? 'KOSDAQ'} lead`, change: byId.kosdaq?.move ?? '+0.00%', tone: byId.kosdaq?.tone ?? 'text-zinc-300' },
+      { label: 'US growth', value: `${byId.nasdaq?.symbol ?? 'NASDAQ'} active`, change: byId.nasdaq?.move ?? '+0.00%', tone: byId.nasdaq?.tone ?? 'text-zinc-300' },
+      { label: 'Dollar', value: `${byId.dxy?.symbol ?? 'DXY'} pulse`, change: byId.dxy?.move ?? '+0.00%', tone: byId.dxy?.tone ?? 'text-zinc-300' },
+      { label: 'Macro hedge', value: `${byId['spot-gold']?.symbol ?? 'XAUUSD'} bid`, change: byId['spot-gold']?.move ?? '+0.00%', tone: byId['spot-gold']?.tone ?? 'text-zinc-300' },
+    ]
+  }, [snapshots])
+
+  const sectorTiles = useMemo(() => {
+    return snapshots.map((item, index) => ({
+      name: item.symbol,
+      move: item.move,
+      span: index === 0 ? 'col-span-2 row-span-2' : index === snapshots.length - 1 ? 'col-span-2' : '',
+      tone: item.tone === 'text-emerald-300'
+        ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300'
+        : 'border-rose-500/20 bg-rose-500/10 text-rose-300',
+    }))
+  }, [snapshots])
+
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_380px]">
       <div className="space-y-4">
@@ -22,7 +47,7 @@ export default function DashboardView() {
 
         <PanelCard
           title="Sector Heatmap Preview"
-          subtitle="Static placeholder tiles to stand in for broad market rotation visibility."
+          subtitle="Live snapshot tiles derived from the connected multi-asset chart path."
         >
           <div className="grid auto-rows-[88px] grid-cols-2 gap-3 md:grid-cols-4">
             {sectorTiles.map((tile) => (

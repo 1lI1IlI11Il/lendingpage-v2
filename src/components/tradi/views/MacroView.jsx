@@ -1,7 +1,68 @@
+import { useMemo } from 'react'
 import PanelCard from '../PanelCard'
-import { macroDrivers, macroScorecards, policyCompass, scenarioPaths } from '../data'
+import { macroDrivers, policyCompass } from '../data'
+import { useMarketSnapshots } from '../useMarketSnapshots'
 
 export default function MacroView() {
+  const snapshots = useMarketSnapshots()
+
+  const { macroScorecards, scenarioPaths } = useMemo(() => {
+    const byId = Object.fromEntries(snapshots.map((item) => [item.id, item]))
+    const kospi = byId.kospi
+    const kosdaq = byId.kosdaq
+    const nasdaq = byId.nasdaq
+    const gold = byId['spot-gold']
+    const wti = byId.wti
+    const dxy = byId.dxy
+
+    const scorecards = [
+      {
+        label: 'Korea risk',
+        value: kospi?.move?.startsWith('-') || kosdaq?.move?.startsWith('-') ? 'Mixed' : 'Bid',
+        note: `${kospi?.symbol ?? 'KOSPI'} ${kospi?.move ?? ''} / ${kosdaq?.symbol ?? 'KOSDAQ'} ${kosdaq?.move ?? ''}`,
+        tone: kosdaq?.tone ?? 'text-zinc-300',
+      },
+      {
+        label: 'US growth',
+        value: nasdaq?.move?.startsWith('-') ? 'Cooling' : 'Stable',
+        note: `${nasdaq?.symbol ?? 'NASDAQ'} ${nasdaq?.move ?? ''} keeps acting as the anchor growth read.`,
+        tone: nasdaq?.tone ?? 'text-zinc-300',
+      },
+      {
+        label: 'Dollar path',
+        value: dxy?.move?.startsWith('-') ? 'Softer' : 'Firmer',
+        note: `${dxy?.symbol ?? 'DXY'} ${dxy?.move ?? ''} shapes pressure on gold and global risk assets.`,
+        tone: dxy?.tone ?? 'text-zinc-300',
+      },
+      {
+        label: 'Energy pulse',
+        value: wti?.move?.startsWith('-') ? 'Mixed' : 'Firm',
+        note: `${wti?.symbol ?? 'WTI'} ${wti?.move ?? ''} while ${gold?.symbol ?? 'XAUUSD'} sits at ${gold?.move ?? ''}.`,
+        tone: wti?.tone ?? 'text-zinc-300',
+      },
+    ]
+
+    const scenarios = [
+      {
+        name: 'Soft-dollar risk-on',
+        probability: dxy?.move?.startsWith('-') && nasdaq && !nasdaq.move.startsWith('-') ? 'Live' : 'Watch',
+        outcome: `${nasdaq?.symbol ?? 'NASDAQ'} and ${dxy?.symbol ?? 'DXY'} are currently the cleanest real-time confirmation pair.`,
+      },
+      {
+        name: 'Hot-inflation repricing',
+        probability: dxy && !dxy.move.startsWith('-') ? 'Elevated' : 'Muted',
+        outcome: `${dxy?.symbol ?? 'DXY'} direction is the fastest available warning signal for this path.`,
+      },
+      {
+        name: 'Growth-scare rotation',
+        probability: wti?.move?.startsWith('-') && kosdaq?.move?.startsWith('-') ? 'Rising' : 'Low',
+        outcome: `${wti?.symbol ?? 'WTI'} and ${kosdaq?.symbol ?? 'KOSDAQ'} weakening together would validate the scare rotation read.`,
+      },
+    ]
+
+    return { macroScorecards: scorecards, scenarioPaths: scenarios }
+  }, [snapshots])
+
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_360px]">
       <div className="space-y-4">

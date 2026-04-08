@@ -1,12 +1,14 @@
 import { navigation, watchlist } from './data'
 
-export default function SidebarNav({ activeView, activeSymbol, onChange }) {
+export default function SidebarNav({ activeView, activeAsset, liveSnapshots, onChange }) {
+  const snapshotById = Object.fromEntries(liveSnapshots.map((item) => [item.id, item]))
+
   return (
     <aside className="flex w-20 flex-col border-r border-zinc-900 bg-zinc-950 px-3 py-4 sm:w-64 sm:px-4">
       <div className="mb-8 rounded-2xl border border-zinc-900 bg-zinc-900/70 px-3 py-4">
         <div className="text-[11px] font-semibold uppercase tracking-[0.32em] text-zinc-500">Tradi</div>
         <div className="mt-2 hidden text-lg font-semibold text-zinc-100 sm:block">Workspace</div>
-        <div className="mt-1 hidden text-sm text-zinc-400 sm:block">Tracking {activeSymbol.symbol} in the local scaffold</div>
+        <div className="mt-1 hidden text-sm text-zinc-400 sm:block">Tracking {activeAsset.symbol} with the local asset registry</div>
       </div>
 
       <div className="space-y-2">
@@ -40,33 +42,39 @@ export default function SidebarNav({ activeView, activeSymbol, onChange }) {
         <div className="hidden text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500 sm:block">Watchlist</div>
         <div className="mt-3 space-y-3">
           {watchlist.map((item) => (
+            (() => {
+              const liveItem = snapshotById[item.id] ?? item
+
+              return (
             <div
-              key={item.symbol}
+              key={item.id}
               className={`rounded-2xl border bg-zinc-950 px-3 py-2 ${
-                item.symbol === activeSymbol.symbol ? 'border-cyan-500/30' : 'border-zinc-900'
+                item.id === activeAsset.id ? 'border-cyan-500/30' : 'border-zinc-900'
               }`}
             >
               <div className="flex items-center justify-between gap-2">
-                <div className="text-xs font-medium text-zinc-200 sm:text-sm">{item.symbol}</div>
-                {item.symbol === activeSymbol.symbol ? (
+                <div className="text-xs font-medium text-zinc-200 sm:text-sm">{liveItem.symbol}</div>
+                {item.id === activeAsset.id ? (
                   <span className="hidden rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300 sm:inline-flex">
                     Active
                   </span>
                 ) : null}
               </div>
               <div className="mt-1 hidden items-center justify-between gap-2 text-xs sm:flex">
-                <span className="text-zinc-400">{item.price}</span>
-                <span className={item.tone}>{item.move}</span>
+                <span className="text-zinc-400">{liveItem.price}</span>
+                <span className={liveItem.tone}>{liveItem.move}</span>
               </div>
             </div>
+              )
+            })()
           ))}
         </div>
       </div>
 
       <div className="mt-auto rounded-2xl border border-zinc-900 bg-gradient-to-br from-zinc-900 to-zinc-950 p-3">
         <div className="hidden text-xs uppercase tracking-[0.24em] text-zinc-500 sm:block">Session</div>
-        <div className="mt-2 text-sm font-medium text-zinc-100">{activeSymbol.symbol} · {activeSymbol.session}</div>
-        <div className="mt-1 text-xs text-zinc-400">Local symbol selection only. No live routing or data feed yet.</div>
+        <div className="mt-2 text-sm font-medium text-zinc-100">{activeAsset.symbol} · {activeAsset.session}</div>
+        <div className="mt-1 text-xs text-zinc-400">{activeAsset.caveat}</div>
       </div>
     </aside>
   )
