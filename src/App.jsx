@@ -62,7 +62,7 @@ export default function App() {
                 onTabChange={setActiveContextTab}
               />
             ) : (
-              <ActiveView />
+              <ActiveView activeAsset={activeAsset} />
             )}
           </main>
         </div>

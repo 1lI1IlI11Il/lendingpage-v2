@@ -1,16 +1,38 @@
+import { useEffect, useState } from 'react'
 import PanelCard from '../PanelCard'
-import { calendarEvents, calendarSessions, eventChecklist } from '../data'
+import { getCalendarPayload } from '../calendarService'
 
 export default function CalendarView() {
+  const [calendarPayload, setCalendarPayload] = useState({
+    provider: 'loading',
+    events: [],
+    sessions: [],
+    checklist: [],
+  })
+
+  useEffect(() => {
+    let active = true
+
+    getCalendarPayload().then((payload) => {
+      if (active) {
+        setCalendarPayload(payload)
+      }
+    })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_340px]">
       <div className="space-y-4">
         <PanelCard
           title="Calendar Workspace"
-          subtitle="A fuller placeholder event view for planning, timing, and reaction prep."
+          subtitle={`A live macro release feed with fallback behavior. Provider: ${calendarPayload.provider}.`}
         >
           <div className="space-y-3">
-            {calendarEvents.map((event) => (
+            {calendarPayload.events.map((event) => (
               <article key={event.event} className="rounded-2xl border border-zinc-900 bg-zinc-900/40 p-4">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div>
@@ -41,7 +63,7 @@ export default function CalendarView() {
           subtitle="High-level placeholders for how the day is segmented across the major trading windows."
         >
           <div className="grid gap-3 md:grid-cols-3">
-            {calendarSessions.map((session) => (
+            {calendarPayload.sessions.map((session) => (
               <div key={session.label} className="rounded-2xl border border-zinc-900 bg-zinc-900/40 p-4">
                 <div className="text-xs uppercase tracking-[0.24em] text-zinc-500">{session.time}</div>
                 <div className="mt-2 text-base font-medium text-zinc-100">{session.label}</div>
@@ -58,7 +80,7 @@ export default function CalendarView() {
         className="h-fit"
       >
         <div className="space-y-3">
-          {eventChecklist.map((item) => (
+          {calendarPayload.checklist.map((item) => (
             <div key={item} className="rounded-2xl border border-zinc-900 bg-zinc-900/40 p-4 text-sm leading-relaxed text-zinc-300">
               {item}
             </div>
