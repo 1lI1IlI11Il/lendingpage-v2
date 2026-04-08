@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import LocalCandlesChart from '../LocalCandlesChart'
 import PanelCard from '../PanelCard'
-import { getMomentumBars, getTrendSnapshot } from '../chartMath'
+import { getPortedIndicatorSnapshot } from '../indicatorPorting'
 import { chartTimeframes, contextTabs } from '../data'
 import { getLocalChartPayload } from '../localChartService'
 
@@ -38,8 +38,9 @@ export default function ChartWorkspaceView({
   const snapshotRows = chartPayload.snapshotRows
   const activeContext = chartPayload.contextRows
   const sourceStrategy = chartPayload.sourceStrategy
-  const trendSnapshot = getTrendSnapshot(activeChartData)
-  const momentumBars = getMomentumBars(activeChartData)
+  const indicatorSnapshot = getPortedIndicatorSnapshot(activeChartData)
+  const superTrend = indicatorSnapshot.superTrend
+  const squeezeMomentum = indicatorSnapshot.squeezeMomentum
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_360px]">
@@ -94,43 +95,43 @@ export default function ChartWorkspaceView({
 
         <PanelCard
           title="Indicator Panel"
-          subtitle={`Simple computed trend and momentum reads derived from the ${activeAsset.symbol} local chart series.`}
+          subtitle={`Porting layer snapshots for ${activeAsset.symbol} based on dedicated indicator modules.`}
         >
           <div className="grid gap-3 md:grid-cols-2">
             <div className="rounded-2xl border border-zinc-900 bg-zinc-900/40 p-4">
               <div className="flex items-center justify-between gap-3">
-                <div className="text-xs uppercase tracking-[0.22em] text-zinc-500">Trend</div>
-                <div className={`text-xs font-semibold ${trendSnapshot.trendDelta >= 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
-                  {trendSnapshot.bias}
+                <div className="text-xs uppercase tracking-[0.22em] text-zinc-500">SuperTrend</div>
+                <div className={`text-xs font-semibold ${superTrend.state === 'bullish' ? 'text-emerald-300' : 'text-rose-300'}`}>
+                  {superTrend.state}
                 </div>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                 <div className="rounded-2xl border border-zinc-900 bg-zinc-950 px-3 py-3">
-                  <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Fast avg</div>
-                  <div className="mt-2 text-zinc-100">{trendSnapshot.shortAverage.toFixed(4)}</div>
+                  <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Line</div>
+                  <div className="mt-2 text-zinc-100">{superTrend.latestLine?.toFixed(4) ?? 'n/a'}</div>
                 </div>
                 <div className="rounded-2xl border border-zinc-900 bg-zinc-950 px-3 py-3">
-                  <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Base avg</div>
-                  <div className="mt-2 text-zinc-100">{trendSnapshot.longAverage.toFixed(4)}</div>
+                  <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">ATR</div>
+                  <div className="mt-2 text-zinc-100">{superTrend.latestAtr?.toFixed(4) ?? 'n/a'}</div>
                 </div>
               </div>
-              <div className="mt-3 text-sm text-zinc-400">Tracks whether the recent closes are holding above the local base.</div>
+              <div className="mt-3 text-sm text-zinc-400">First dedicated porting module. Trend flips when price crosses the adaptive band.</div>
             </div>
             <div className="rounded-2xl border border-zinc-900 bg-zinc-900/40 p-4">
               <div className="flex items-center justify-between gap-3">
-                <div className="text-xs uppercase tracking-[0.22em] text-zinc-500">Momentum</div>
-                <div className={`text-xs font-semibold ${trendSnapshot.momentum >= 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
-                  Last Δ {trendSnapshot.momentum.toFixed(4)}
+                <div className="text-xs uppercase tracking-[0.22em] text-zinc-500">Squeeze Momentum</div>
+                <div className={`text-xs font-semibold ${squeezeMomentum.state === 'compression' ? 'text-amber-300' : 'text-cyan-300'}`}>
+                  {squeezeMomentum.state}
                 </div>
               </div>
               <div className="mt-4 flex h-24 items-end gap-2 rounded-2xl border border-zinc-900 bg-zinc-950 px-3 py-3">
-                {momentumBars.map((bar) => (
+                {squeezeMomentum.histogram.map((bar) => (
                   <div key={bar.id} className="flex h-full flex-1 items-end">
                     <div className={`w-full rounded-t-xl ${bar.tone}`} style={{ height: `${bar.heightPercent}%` }} />
                   </div>
                 ))}
               </div>
-              <div className="mt-3 text-sm text-zinc-400">Recent close-to-close change bars for the selected timeframe.</div>
+              <div className="mt-3 text-sm text-zinc-400">Momentum histogram derived from a squeeze-style porting layer on the selected timeframe.</div>
             </div>
           </div>
         </PanelCard>
