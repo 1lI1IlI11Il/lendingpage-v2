@@ -1,0 +1,10 @@
+{
+  "extraPaths": [
+    "vendor/Kronos",
+    ".python_packages"
+  ],
+  "include": [
+    "app",
+    "tests"
+  ]
+}
