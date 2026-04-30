@@ -1,0 +1,10 @@
+{
+  "extraPaths": [
+    "backend/.python_packages",
+    "backend/vendor/Kronos"
+  ],
+  "include": [
+    "backend/app",
+    "backend/tests"
+  ]
+}

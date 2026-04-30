@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Local backend runtime artifacts
+backend/.python_packages/
+backend/.venv/
+backend/vendor/Kronos/
+backend/__pycache__/
+backend/**/*.pyc
