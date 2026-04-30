@@ -30,6 +30,7 @@ function buildSeriesMap({ precision = 2, spreadRatio = 0.004, closesByTimeframe 
 export const navigation = [
   { id: 'dashboard', label: 'Dashboard', shortLabel: 'Dash', badge: 'Live' },
   { id: 'chart', label: 'Chart Workspace', shortLabel: 'Chart', badge: 'FX' },
+  { id: 'analysis', label: 'Kronos Analysis', shortLabel: 'AI', badge: 'ML' },
   { id: 'macro', label: 'Macro', shortLabel: 'Macro', badge: 'Top' },
   { id: 'calendar', label: 'Calendar', shortLabel: 'Cal', badge: 'Evt' },
   { id: 'heatmap', label: 'Heatmap', shortLabel: 'Map', badge: 'Rot' },

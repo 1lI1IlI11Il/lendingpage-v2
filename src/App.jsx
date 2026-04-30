@@ -8,6 +8,7 @@ import CalendarView from './components/tradi/views/CalendarView'
 import HeatmapView from './components/tradi/views/HeatmapView'
 import NewsView from './components/tradi/views/NewsView'
 import FundamentalsView from './components/tradi/views/FundamentalsView'
+import KronosAnalysisView from './components/tradi/views/KronosAnalysisView'
 import { assetOptions } from './components/tradi/data'
 import { useMarketSnapshots } from './components/tradi/useMarketSnapshots'
 
@@ -19,6 +20,7 @@ const views = {
   heatmap: HeatmapView,
   news: NewsView,
   fundamentals: FundamentalsView,
+  analysis: KronosAnalysisView,
 }
 
 export default function App() {
